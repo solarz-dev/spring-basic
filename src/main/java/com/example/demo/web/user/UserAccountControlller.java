@@ -1,6 +1,7 @@
 package com.example.demo.web.user;
 
 import java.util.HashSet;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.application.user.UserService;
 import com.example.demo.business.user.Role;
+import com.example.demo.business.user.UserAccount;
 
 @RestController
 public class UserAccountControlller {
@@ -38,5 +40,21 @@ public class UserAccountControlller {
 			return response;
 		}
 		throw new RuntimeException("User not found");
+	}
+	
+	@GetMapping("/user/role/{roleName}")
+	public List<UserAccountDto> getByRoleName(@PathVariable String roleName) {
+		var users = userService.getAllByRoleName(roleName);
+		return users
+				.stream()
+				.map(u -> map(u))
+				.toList();
+	}
+	
+	private UserAccountDto map(UserAccount userAccount) {
+		var response = new UserAccountDto();
+		response.setId(userAccount.getId());
+		response.setName(userAccount.getName());
+		return response;
 	}
 }
