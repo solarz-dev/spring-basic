@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.application.user.UserService;
 import com.example.demo.business.user.Role;
 import com.example.demo.business.user.UserAccount;
+import com.example.demo.business.user.UserAccountSimpleDto;
 
 @RestController
 public class UserAccountControlller {
@@ -49,6 +50,15 @@ public class UserAccountControlller {
 				.stream()
 				.map(u -> map(u))
 				.toList();
+	}
+	
+	@GetMapping("/user/findWithAdress/{userId}")
+	public UserAccountSimpleDto getByIdWithAddress(@PathVariable long userId) {
+		var user = userService.getByIdWithAddress(userId);
+		if (user.isPresent()) {
+			return user.get();
+		}
+		throw new RuntimeException("User not found");
 	}
 	
 	private UserAccountDto map(UserAccount userAccount) {

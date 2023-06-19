@@ -26,10 +26,13 @@ public class UserAccount {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private String name;
+	private String username; // unique
+    private String password;
 	@OneToOne
 	private Endereco endereco;
 	@OneToMany(orphanRemoval = true, mappedBy = "userAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<FormaDePagamento> formaDePagamento = new ArrayList<>();
 	@ManyToMany(fetch = FetchType.LAZY) // many to many sempre usar Set
 	private Set<Role> roles = new HashSet<>();
+	private boolean enabled = true;
 }

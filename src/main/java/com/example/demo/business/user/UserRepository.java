@@ -1,6 +1,7 @@
 package com.example.demo.business.user;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,6 +23,12 @@ public interface UserRepository extends JpaRepository<UserAccount, Long>{
 			+ "JOIN role r ON uar.roles_id = r.id "
 			+ "WHERE r.name = :name", nativeQuery = true)
 	List<UserAccount> findAllByRoleNameNative(@Param("name") String name);
+	
+	@Query("SELECT u.id as id, u.name as userName, ende.logradouro as logradouro "
+			+ "FROM UserAccount u "
+			+ "LEFT JOIN u.endereco ende "
+			+ "WHERE u.id = :userId")
+	Optional<UserAccountSimpleDto> findByIdWithAddress(@Param("userId") long id);
 
 	List<UserAccount> findAllByRoles(Role role);
 }
