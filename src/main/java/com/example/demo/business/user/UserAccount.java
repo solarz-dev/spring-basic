@@ -26,6 +26,8 @@ public class UserAccount {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private String name;
+	private String email;
+	private String lastName;
 	private String username; // unique
     private String password;
 	@OneToOne
@@ -34,5 +36,8 @@ public class UserAccount {
 	private List<FormaDePagamento> formaDePagamento = new ArrayList<>();
 	@ManyToMany(fetch = FetchType.LAZY) // many to many sempre usar Set
 	private Set<Role> roles = new HashSet<>();
+	
+	@ManyToMany(fetch = FetchType.LAZY) // many to many sempre usar Set
+	private Set<Privilege> privileges = new HashSet<>();
 	private boolean enabled = true;
 }

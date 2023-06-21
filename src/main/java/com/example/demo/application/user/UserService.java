@@ -1,6 +1,7 @@
 package com.example.demo.application.user;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,9 +9,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.business.user.QUserAccount;
+import com.example.demo.business.user.Role;
 import com.example.demo.business.user.RoleRepository;
 import com.example.demo.business.user.UserAccount;
 import com.example.demo.business.user.UserAccountSimpleDto;
@@ -30,7 +33,32 @@ public class UserService {
 
     @PersistenceContext
     private EntityManager entityManager;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public UserAccount registerNewUserAccount(CreateUserAccountDto createUserAccountDto,
+    		Role role) throws UsernameExistsException {
+        if (usernameExist(createUserAccountDto.getUsername())) {
+            throw new UsernameExistsException(
+              "There is an account with that username:" + createUserAccountDto.getUsername());
+        }
+        var user = new UserAccount();
+        user.setName(createUserAccountDto.getName());
+        user.setLastName(createUserAccountDto.getLastName());
+        user.setUsername(createUserAccountDto.getUsername());
+        
+        user.setPassword(passwordEncoder.encode(createUserAccountDto.getPassword()));
+        
+        user.setEmail(createUserAccountDto.getEmail());
+        user.getRoles().add(role);
+        return userRepository.save(user);
+    }
 	
+	private boolean usernameExist(String username) {
+		return getByUsername(username).isPresent();
+	}
+
 	public UserAccount save(SaveUserForm form) {
 		var user = new UserAccount();
 		user.setName(form.getName());
@@ -66,6 +94,14 @@ public class UserService {
 			return userRepository.findAllByRoles(role.get());
 		}
 		return new ArrayList<>();
+	}
+
+	public Optional<UserAccount> getByUsername(String username) {
+		return userRepository.findByUsername(username);
+	}
+
+	public Optional<UserAccount> getByUsernameForLogin(String username) {
+		return userRepository.findByUsernameForLogin(username);
 	}
 	
 }

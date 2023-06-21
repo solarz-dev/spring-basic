@@ -13,19 +13,18 @@ public class BasicAuthConfiguration {
 
     @Bean
     public SecurityFilterChain filterChainApp1(HttpSecurity http) throws Exception {
-        http
-        .requestMatchers()
-            .antMatchers("/**")
-        .and()
+    	http
         .authorizeRequests()
-        .anyRequest()
-        .hasAnyRole("ADMIN")
+        	.antMatchers("/admin/**").hasAnyAuthority("ADMIN")
+        	.antMatchers("/**").hasAnyAuthority("CLIENT")
+        	.anyRequest().authenticated()
         .and()
         .httpBasic()
         .authenticationEntryPoint(authenticationEntryPoint1())
         .and()
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        
         http.csrf().disable();
         return http.build();
     }

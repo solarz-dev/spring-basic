@@ -3,6 +3,7 @@ package com.example.demo.business.user;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +32,10 @@ public interface UserRepository extends JpaRepository<UserAccount, Long>{
 	Optional<UserAccountSimpleDto> findByIdWithAddress(@Param("userId") long id);
 
 	List<UserAccount> findAllByRoles(Role role);
+
+	Optional<UserAccount> findByUsername(String username);
+
+	@EntityGraph(attributePaths = {"roles", "privileges"})
+	@Query("SELECT u FROM UserAccount u WHERE u.username = :username")
+	Optional<UserAccount> findByUsernameForLogin(@Param("username") String username);
 }
